@@ -69,10 +69,12 @@ def get_token():
     credential = CertificateCredential(
         client_id=client_id,
         certificate_path=certificate_path,
-        tenant_id=tenant_id
+        tenant_id=tenant_id,
+        scope=scope
     )
     cred_info = credential.get_token(scope)
-    return cred_info.token
+    token = cred_info.token
+    return token
 
 
 def get_openai_instance():
@@ -81,7 +83,7 @@ def get_openai_instance():
     """
     # CONFIG_SECTION: AZURE_ENDPOINT
     client = AzureOpenAI(
-        credential=get_token(),
+        api_key=get_token(),
         api_version="2024-02-15-preview",
         azure_endpoint="YOUR_AZURE_ENDPOINT"
     )
