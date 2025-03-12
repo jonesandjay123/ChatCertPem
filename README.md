@@ -70,8 +70,8 @@ pip install -r requirements.txt
 if os.environ.get("no_proxy", "").split(",")[-1] == "openai.azure.com":
     os.environ["no_proxy"] = os.environ["no_proxy"] + ",openai.azure.com"
 
-os.environ["http_proxy"] = "proxy.jpmchase.net:10443"
-os.environ["https_proxy"] = "proxy.jpmchase.net:10443"
+os.environ["http_proxy"] = "proxy...net:10443"
+os.environ["https_proxy"] = "proxy...net:10443"
 ```
 
 ### 2. 認證資訊
@@ -79,9 +79,11 @@ os.environ["https_proxy"] = "proxy.jpmchase.net:10443"
 在`app.py`中尋找 `# CONFIG_SECTION: AUTH_CREDENTIALS` 部分，並替換為以下內容：
 
 ```python
-client_id = "AE39708-2E38-49CD-...-EC50E830E3BC"     # 實際的客戶端ID
+# Azure OpenAI 憑證設置 - 請在私有環境中填入真實認證資訊
+# CONFIG_SECTION: AUTH_CREDENTIALS
+client_id = "AE39708-..."     # 實際的客戶端ID
 certificate_path = "Terra.pem"                        # 實際的憑證路徑
-tenant_id = "79C73825-CD5C-4D36-...-6EA2ED78F64A"    # 實際的租戶ID
+tenant_id = "79C73825-..."    # 實際的租戶ID
 model = "gpt-4-2024-05-13"                           # 實際使用的模型名稱
 ```
 
@@ -90,36 +92,12 @@ model = "gpt-4-2024-05-13"                           # 實際使用的模型名�
 在`app.py`中尋找 `# CONFIG_SECTION: AZURE_ENDPOINT` 部分，並更新以下行：
 
 ```python
-azure_endpoint="https://lmopenai.jpmchase.net/v15086-eus2-exp-use2/"
+azure_endpoint="https://lmopenai.../"
 ```
 
 ### 4. 文件路徑設置
 
-更新以下文件路徑配置：
-
-在`app.py`中尋找 `# CONFIG_SECTION: TEMPLATE2_PATH` 部分，並替換為：
-
-```python
-cwd="/home/jpmcnobody/telescope-config-generator/src/dags/",
-```
-
-在`app.py`中尋找 `# CONFIG_SECTION: TEMPLATE_PATH` 部分，並替換為：
-
-```python
-cwd="/home/jpmcnobody/telescope-config-generator/src/dags/",
-```
-
-在`app.py`中尋找 `# CONFIG_SECTION: COMMAND_MAP_PATH` 部分，並替換為：
-
-```python
-with open("src/dags/CommandMap_Newton.json", "r") as file:
-```
-
-在`app.py`中尋找 `# CONFIG_SECTION: GRID_TEMPLATE_PATH` 部分，並替換為：
-
-```python
-with open("src/dags/Grid1_33526_template.json", "r") as file:
-```
+這一部分在簡化版應用中已被移除，無需配置。
 
 ## 確保憑證存在
 

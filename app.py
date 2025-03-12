@@ -1,6 +1,4 @@
 import os
-import sys
-import subprocess
 import base64
 import uuid
 import imghdr
@@ -12,11 +10,7 @@ import requests
 
 from azure.identity import CertificateCredential
 from azure.core.credentials import AccessToken
-from azure.ai.openai import AzureOpenAI
-
-from src.user_details import get_dag_from_param
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "src", "dags"))
+from openai import AzureOpenAI
 
 app = Flask(__name__)
 CORS(app)
@@ -195,162 +189,6 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/hello/<message>")
-def hello(message):
-    """
-    Simple test endpoint
-    """
-    return f"Hello, Welcome {message}"
-
-
-@app.route("/generate-config", methods=["GET"])
-def generate_config():
-    """
-    Generate configuration from script
-    """
-    script_path = os.path.join(os.path.dirname(__file__), "src", "generate_config.py")
-    result = subprocess.run(["python", script_path], capture_output=True, text=True)
-    if result.returncode == 0:
-        return jsonify({"output": result.stdout}), 200
-    else:
-        return jsonify({"error": result.stderr}), 500
-
-
-@app.route("/select-dag", methods=["GET"])
-def select_dag():
-    """
-    Select a DAG based on choice parameter
-    """
-    choice = request.args.get("choice", type=int)
-    print(f"Received choice: {choice}")
-
-    if choice is None:
-        return jsonify({"error": "Choice parameter is required"}), 400
-
-    selected_dag, dag_details = get_dag_from_param(choice)
-    if selected_dag:
-        return jsonify({"selected_dag": selected_dag, "details": dag_details})
-    else:
-        return jsonify({"error": "Invalid choice"}), 400
-
-
-@app.route("/select-dag-for-graph", methods=["GET"])
-def select_dag_for_graph():
-    """
-    Select a DAG for graph visualization
-    """
-    choice = request.args.get("choice", type=int)
-    if choice is None:
-        return jsonify({"error": "Choice parameter is required"}), 400
-
-    selected_dag, dag_details = get_dag_from_param(choice)
-    if selected_dag:
-        return jsonify({"selected_dag": selected_dag, "details": dag_details})
-    else:
-        return jsonify({"error": "Invalid choice"}), 400
-
-
-@app.route("/template2", methods=["GET"])
-def generate_template2():
-    """
-    Generate template for a specific DAG
-    """
-    choice = request.args.get("choice", type=int)
-    if choice is None:
-        return jsonify({"error": "Choice parameter is required"}), 400
-
-    dag_file = get_dag_from_param(choice)
-    if not dag_file:
-        return jsonify({"error": "dag_file doesn't exists!"}), 400
-
-    try:
-        # CONFIG_SECTION: TEMPLATE2_PATH
-        result = subprocess.run(
-            ["python", "generate_files.py", dag_file],
-            cwd="YOUR_TEMPLATE2_PATH",
-            capture_output=True,
-            text=True
-        )
-        if result.returncode == 0:
-            return jsonify({"output": result.stdout}), 200
-        else:
-            return jsonify({"error": result.stderr}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/template", methods=["GET"])
-def generate_template():
-    """
-    Generate general template
-    """
-    try:
-        # CONFIG_SECTION: TEMPLATE_PATH
-        result = subprocess.run(
-            ["python", "generate_files.py"],
-            cwd="YOUR_TEMPLATE_PATH",
-            capture_output=True,
-            text=True
-        )
-        if result.returncode == 0:
-            return jsonify({"output": result.stdout}), 200
-        else:
-            return jsonify({"error": result.stderr}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/read-command-map", methods=["GET"])
-def read_command_map():
-    """
-    Read command map file
-    """
-    try:
-        # CONFIG_SECTION: COMMAND_MAP_PATH
-        with open("YOUR_COMMAND_MAP_PATH", "r") as file:
-            command_map = file.read()
-        return jsonify(command_map), 200
-    except FileNotFoundError:
-        return jsonify({"error": "CommandMap_Newton.json not found"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/read-grid-template", methods=["GET"])
-def read_grid_template():
-    """
-    Read grid template file
-    """
-    try:
-        # CONFIG_SECTION: GRID_TEMPLATE_PATH
-        with open("YOUR_GRID_TEMPLATE_PATH", "r") as file:
-            command_map = file.read()
-        return jsonify(command_map), 200
-    except FileNotFoundError:
-        return jsonify({"error": "Grid template file not found"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/upload-file", methods=["POST"])
-def upload_file():
-    """
-    Handle general file upload
-    """
-    file = request.files.get("file")
-    if file is None:
-        content = request.form.get("file")
-        if content is None or content.strip() == "":
-            return jsonify({"error": "No file part in the request"}), 400
-        return jsonify({"message": "Text content received", "content": content})
-
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
-
-    content = file.read().decode("utf-8")
-    return jsonify({"message": "File uploaded successfully", "content": content})
-
-
 def process_chat(question):
     """
     Process text chat request
@@ -404,5 +242,5 @@ def chat_endpoint():
 
 
 if __name__ == "__main__":
-    print("---This Flask app is starting with the latest code version 8/22/2024 4:55pm---")
+    print("---This Flask app is starting with the latest code version---")
     app.run(host="0.0.0.0", port=5000, debug=True)
