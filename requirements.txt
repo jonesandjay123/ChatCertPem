@@ -1,9 +1,9 @@
 Flask==2.3.3
-flask-cors==4.0.2
+flask-cors==5.0.1
 requests==2.31.0
 azure-identity==1.15.0
 azure-core==1.29.5
 openai==1.65.5
 python-dotenv==1.0.0
 Werkzeug==3.0.3
-Pillow==10.0.0 
+Pillow==11.0.1 
