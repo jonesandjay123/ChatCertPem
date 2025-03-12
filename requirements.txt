@@ -1,0 +1,8 @@
+Flask==2.3.3
+flask-cors==4.0.0
+requests==2.31.0
+azure-identity==1.15.0
+azure-core==1.29.5
+azure-ai-openai==1.0.0
+python-dotenv==1.0.0
+Werkzeug==2.3.7 
