@@ -1,15 +1,14 @@
 import os
 import base64
 import uuid
-import imghdr
 from werkzeug.utils import secure_filename
+from PIL import Image
+import io
 
 from flask import jsonify, Flask, request, render_template
 from flask_cors import CORS
-import requests
 
 from azure.identity import CertificateCredential
-from azure.core.credentials import AccessToken
 from openai import AzureOpenAI
 
 app = Flask(__name__)
@@ -46,12 +45,20 @@ def allowed_file(filename):
 
 def validate_image(file_path):
     """
-    Validate that the file is actually an image
+    Validate that the file is actually an image using Pillow
     """
-    img_type = imghdr.what(file_path)
-    if img_type is None or img_type.lower() not in ALLOWED_EXTENSIONS:
+    try:
+        img = Image.open(file_path)
+        img.verify()  # Verify the image
+        
+        # Check if image format is in allowed extensions
+        img_format = img.format.lower() if img.format else None
+        if img_format not in ['png', 'jpeg', 'jpg', 'gif']:
+            return False
+            
+        return True
+    except Exception:
         return False
-    return True
 
 
 def get_token():
@@ -62,12 +69,10 @@ def get_token():
     credential = CertificateCredential(
         client_id=client_id,
         certificate_path=certificate_path,
-        tenant_id=tenant_id,
-        scope=scope
+        tenant_id=tenant_id
     )
     cred_info = credential.get_token(scope)
-    token = cred_info.token
-    return token
+    return cred_info.token
 
 
 def get_openai_instance():
@@ -245,4 +250,4 @@ def chat_endpoint():
 
 if __name__ == "__main__":
     print("---This Flask app is starting with the latest code version---")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)
