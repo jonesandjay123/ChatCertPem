@@ -116,6 +116,34 @@ python app.py
 
 應用程式將在`http://localhost:5000`啟動，您可以在瀏覽器中訪問此地址來使用聊天機器人。
 
+## Azure OpenAI API 版本資訊
+
+以下是可用的 Azure OpenAI API 預覽版本及其功能：
+
+| API 版本           | 主要功能                             |
+| ------------------ | ------------------------------------ |
+| 2025-01-01-preview | 當前最新的預覽版本，支持預測輸出功能 |
+| 2024-12-01-preview | 支持推理模型和存儲完成               |
+| 2024-10-01-preview | 較早的預覽版本                       |
+| 2024-05-01-preview | 支持助手 API V2                      |
+| 2024-03-01-preview | 支持嵌入格式和維度參數               |
+| 2024-02-15-preview | 支持助手 API 和文本轉語音            |
+
+要更改 API 版本，請修改`app.py`中的`get_openai_instance()`函數：
+
+```python
+def get_openai_instance():
+    """
+    Create and return an Azure OpenAI client instance
+    """
+    client = AzureOpenAI(
+        api_key=get_token(),
+        api_version="2025-01-01-preview",  # 修改為所需的API版本
+        azure_endpoint=azure_endpoint
+    )
+    return client
+```
+
 ## 停止虛擬環境
 
 當您完成工作後，可以通過以下命令離開虛擬環境：
